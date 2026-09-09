@@ -1,0 +1,13 @@
+import mysql from "mysql2/promise";
+import { drizzle } from "drizzle-orm/mysql2";
+import env from "./env.js";
+
+const pool = mysql.createPool({
+  uri: env.DATABASE_URL,
+});
+
+export const db = drizzle({
+  client: pool.pool,
+});
+
+export default pool;
