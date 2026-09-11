@@ -7,7 +7,7 @@ const pool = mysql.createPool({
 });
 
 export const db = drizzle({
-  client: pool.pool,
+  client: pool,
 });
 
 export default pool;
