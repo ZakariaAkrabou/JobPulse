@@ -25,7 +25,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "JobMatch — Stop checking job boards. Start seeing them.",
+  title: "JobPulse — Stop checking job boards. Start seeing them.",
   description: "Upload your resume once and receive automatic email notifications when new matching roles appear across Indeed, LinkedIn, Adzuna, and Remotive.",
 };
 
