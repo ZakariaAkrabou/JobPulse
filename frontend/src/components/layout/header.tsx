@@ -11,16 +11,16 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 h-15.5 w-full border-b border-[#E5E1D8] bg-[#FAF9F6] transition-colors">
       <div className="mx-auto flex h-full max-w-285 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Wordmark Jobmatch */}
+      
         <Link
           href="/"
           className="font-serif text-2xl tracking-tight text-[#2A2B2F] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-sm cursor-pointer"
-          aria-label="JobMatch Home"
+          aria-label="jobPulse Home"
         >
           Job<span className="italic text-[#3F5D9E]">Pulse</span>
         </Link>
 
-        {/* Right: Desktop Navigation Links (Pricing removed) */}
+      
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2B2F]">
           <Link
             href="#how"
@@ -61,7 +61,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+    
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-[#E5E1D8] bg-[#FAF9F6] px-4 py-6 shadow-none">
           <nav className="flex flex-col gap-4 text-base font-medium text-[#2A2B2F]">

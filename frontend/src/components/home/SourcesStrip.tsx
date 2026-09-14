@@ -2,7 +2,7 @@
 
 import React from "react";
 
-/* ── Platform data ────────────────────────────────────────────────────────── */
+
 const platforms = [
   {
     name: "LinkedIn",
@@ -94,10 +94,10 @@ const platforms = [
   },
 ];
 
-/* Double the list for seamless loop */
+
 const doubled = [...platforms, ...platforms];
 
-/* ── Component ────────────────────────────────────────────────────────────── */
+
 export function SourcesStrip() {
   return (
     <section
@@ -105,7 +105,7 @@ export function SourcesStrip() {
       aria-label="Supported job platforms"
       className="w-full border-y border-[#E5E1D8] bg-[#F2EFE9] py-8 overflow-hidden"
     >
-      {/* CSS keyframe injection */}
+   
       <style>{`
         @keyframes marquee {
           from { transform: translateX(0); }
@@ -120,8 +120,8 @@ export function SourcesStrip() {
         }
       `}</style>
 
-      {/* Label row */}
-      <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8 mb-6 flex items-center justify-between">
+  
+      <div className="mx-auto max-w-285 px-4 sm:px-6 lg:px-8 mb-6 flex items-center justify-between">
         <span className="font-mono text-xs uppercase tracking-wider text-[#6B6B72]">
           Pulls from {platforms.length} platforms
         </span>
@@ -131,7 +131,7 @@ export function SourcesStrip() {
         </span>
       </div>
 
-      {/* Carousel wrapper — hover pauses via CSS */}
+
       <div
         className="marquee-wrapper relative flex overflow-hidden"
         style={{
@@ -146,18 +146,17 @@ export function SourcesStrip() {
           {doubled.map((p, i) => (
             <div
               key={`${p.name}-${i}`}
-              className="group flex items-center gap-3 px-4 py-3 rounded-[12px] border border-[#E5E1D8] bg-white shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:border-[#3F5D9E]/40 hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all duration-200 cursor-default shrink-0 select-none"
+              className="group flex items-center gap-3 px-4 py-3 rounded-xl border border-[#E5E1D8] bg-white shadow-[0_2px_8px_rgb(0,0,0,0.04)] hover:border-[#3F5D9E]/40 hover:shadow-[0_4px_16px_rgb(0,0,0,0.08)] transition-all duration-200 cursor-default shrink-0 select-none"
               style={{ minWidth: 190 }}
             >
-              {/* Colored logo badge */}
               <span
-                className="flex items-center justify-center h-9 w-9 rounded-[8px] shrink-0 transition-transform duration-200 group-hover:scale-110"
+                className="flex items-center justify-center h-9 w-9 rounded-lg shrink-0 transition-transform duration-200 group-hover:scale-110"
                 style={{ backgroundColor: p.bg, color: p.color }}
               >
                 {p.logo}
               </span>
 
-              {/* Text */}
+            
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-[#2A2B2F] leading-tight">{p.name}</span>
                 <span className="font-mono text-[10px] text-[#949499] leading-tight mt-0.5">

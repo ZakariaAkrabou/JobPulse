@@ -19,12 +19,12 @@ export function StepCard({ number, title, body, isLast = false }: StepCardProps)
       }`}
     >
       <div>
-        {/* Number with horizontal rule extending to the right */}
+
         <div className="flex items-center gap-3 mb-6">
           <span className="font-mono text-sm font-medium text-[#6B6B72]">
             {number}
           </span>
-          <div className="h-[1px] flex-1 bg-[#E5E1D8]" />
+          <div className="h-px flex-1 bg-[#E5E1D8]" />
         </div>
 
         <h3 className="font-serif text-2xl text-[#2A2B2F] mb-3">

@@ -14,7 +14,7 @@ export function PreviewCard() {
       className="w-full rounded-[14px] border border-[#E5E1D8] bg-[#FFFFFF] shadow-[0_8px_30px_rgb(0,0,0,0.06)] overflow-hidden transition-all hover:border-[#3F5D9E]/30 cursor-pointer"
       aria-label="JobMatch Inbox Preview"
     >
-      {/* Browser-like title bar */}
+    
       <div className="flex items-center justify-between border-b border-[#E5E1D8] bg-[#F2EFE9] px-4 py-2.5">
         <div className="flex items-center gap-1.5" aria-hidden="true">
           <span className="h-2 w-2 rounded-full bg-[#D8D2C4]" />
@@ -27,7 +27,7 @@ export function PreviewCard() {
         <div className="w-8" aria-hidden="true" />
       </div>
 
-      {/* Inbox Header */}
+ 
       <div className="flex items-baseline justify-between border-b border-[#E5E1D8] px-4 py-3 bg-[#FAF9F6]">
         <h3 className="font-serif text-lg text-[#2A2B2F]">Your inbox</h3>
         <span className="font-mono text-xs text-[#6B6B72]">
@@ -35,7 +35,7 @@ export function PreviewCard() {
         </span>
       </div>
 
-      {/* Job Rows */}
+  
       <div className="divide-y divide-[#E5E1D8]">
         <JobRow
           title="Senior Frontend Engineer"
@@ -55,7 +55,6 @@ export function PreviewCard() {
           matchScore={88}
           matchLevel="high"
         />
-        {/* 3rd row: hidden on mobile (<768px), visible on md+ as per spec */}
         <div className="hidden md:block">
           <JobRow
             title="Full Stack Developer"
@@ -70,7 +69,6 @@ export function PreviewCard() {
         </div>
       </div>
 
-      {/* Footer Bar */}
       <div className="flex items-center justify-between border-t border-[#E5E1D8] bg-[#FAF9F6] px-4 py-2.5 font-mono text-[11px] text-[#949499]">
         <div className="flex items-center gap-1.5">
           <span

@@ -11,7 +11,7 @@ export function NotificationMock() {
         <div className="flex items-start gap-3">
           {/* Avatar Block */}
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px] border border-[#E5E1D8] bg-[#F2EFE9] font-mono text-xs font-semibold text-[#2A2B2F] select-none"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E5E1D8] bg-[#F2EFE9] font-mono text-xs font-semibold text-[#2A2B2F] select-none"
             aria-hidden="true"
           >
             ▲
