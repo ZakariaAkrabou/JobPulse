@@ -10,7 +10,7 @@ import ScrollReveal from "@/src/components/ui/ScrollReveal";
 export function HowItWorks() {
   return (
     <section id="how" className="py-24 border-b border-[#E5E1D8]">
-      <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-285 px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <SectionHeader
             kicker="HOW IT WORKS"
@@ -20,7 +20,7 @@ export function HowItWorks() {
           />
         </ScrollReveal>
 
-        {/* 3-column spreadsheet-like grid with visible 1px borders */}
+        
         <ScrollReveal delay={0.1}>
           <div className="rounded-[14px] border border-[#E5E1D8] bg-[#FAF9F6] overflow-hidden grid grid-cols-1 md:grid-cols-3 shadow-none">
             <StepCard
@@ -48,7 +48,7 @@ export function HowItWorks() {
               body={
                 <p>
                   Hourly scans run quietly. We send an email only when a role scores above your{" "}
-                  <span className="inline-block font-mono text-xs bg-[#E7ECF7] text-[#3F5D9E] px-1.5 py-0.5 rounded-[4px] font-medium">
+                  <span className="inline-block font-mono text-xs bg-[#E7ECF7] text-[#3F5D9E] px-1.5 py-0.5 rounded-sm font-medium">
                     60%
                   </span>{" "}
                   fit threshold.
@@ -78,7 +78,7 @@ export function HowItWorks() {
               </span>
             </div>
 
-            <div className="relative w-full aspect-[16/9] rounded-[10px] overflow-hidden border border-[#E5E1D8] bg-[#FAF9F6]">
+            <div className="relative w-full aspect-video rounded-[10px] overflow-hidden border border-[#E5E1D8] bg-[#FAF9F6]">
               <Image
                 src="/images/resume-matching.jpg"
                 alt="Diagram showing Candidate Resume parsing and matching against Verified Job Feeds from LinkedIn, Indeed, and Remotive"

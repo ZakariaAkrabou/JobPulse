@@ -18,7 +18,7 @@ export function FeatureBento() {
 
   return (
     <section id="features" className="py-24 border-b border-[#E5E1D8]">
-      <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-285 px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <SectionHeader
             kicker="THE ENGINE"
@@ -28,9 +28,9 @@ export function FeatureBento() {
           />
         </ScrollReveal>
 
-        {/* Asymmetric 2-column: 1 tall on left + 2 small on right */}
+     
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Tall Card (spans 2 rows on lg) */}
+        
           <ScrollReveal className="lg:col-span-7 flex flex-col" delay={0.1}>
             <motion.div
               whileHover={{ y: -3, transition: { duration: 0.2 } }}
@@ -47,20 +47,20 @@ export function FeatureBento() {
                   Decide how and when we contact you. Instant email alerts trigger only for high-scoring matches, while weekly summaries catch everything else. We built no unread counters, no push nags, and no engagement loops.
                 </p>
 
-                {/* Static Toggle Chips */}
+             
                 <div className="mt-5">
                   <ToggleChips items={notificationChips} />
                 </div>
               </div>
 
-              {/* Mock Notification Illustration */}
+              
               <NotificationMock />
             </motion.div>
           </ScrollReveal>
 
-          {/* Right Column: 2 Small Cards */}
+         
           <div className="lg:col-span-5 flex flex-col gap-6">
-            {/* Right Top Card */}
+          
             <ScrollReveal delay={0.2} className="flex-1 flex flex-col">
               <motion.div
                 whileHover={{ y: -3, transition: { duration: 0.2 } }}
@@ -78,7 +78,7 @@ export function FeatureBento() {
               </motion.div>
             </ScrollReveal>
 
-            {/* Right Bottom Card */}
+     
             <ScrollReveal delay={0.3} className="flex-1 flex flex-col">
               <motion.div
                 whileHover={{ y: -3, transition: { duration: 0.2 } }}

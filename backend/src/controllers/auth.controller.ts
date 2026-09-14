@@ -66,12 +66,15 @@ export const login = async (req: Request, res: Response) => {
     const result = await loginUser({
       email,
       password,
+      
     });
 
+    
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      ...result,
+      accessToken: result.accessToken,
+     
     });
   } catch (error) {
     if (
@@ -135,40 +138,7 @@ export const refresh = async (req: Request, res: Response) => {
     });
   }
 };
-export const me = async (req: AuthRequest, res: Response) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-    }
 
-    const user = await getCurrentUser(req.user.userId);
-
-    return res.status(200).json({
-      success: true,
-      user,
-    });
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message === "User not found"
-    ) {
-      return res.status(404).json({
-        success: false,
-        message: error.message,
-      });
-    }
-
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-};
 
 export const profile = async (req: AuthRequest, res: Response) => {
   try {

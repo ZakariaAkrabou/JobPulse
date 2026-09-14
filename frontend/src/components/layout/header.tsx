@@ -9,34 +9,34 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 h-[62px] w-full border-b border-[#E5E1D8] bg-[#FAF9F6] transition-colors">
-      <div className="mx-auto flex h-full max-w-[1140px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left: Wordmark Jobmatch */}
+    <header className="sticky top-0 z-50 h-15.5 w-full border-b border-[#E5E1D8] bg-[#FAF9F6] transition-colors">
+      <div className="mx-auto flex h-full max-w-285 items-center justify-between px-4 sm:px-6 lg:px-8">
+      
         <Link
           href="/"
-          className="font-serif text-2xl tracking-tight text-[#2A2B2F] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-[4px] cursor-pointer"
-          aria-label="JobMatch Home"
+          className="font-serif text-2xl tracking-tight text-[#2A2B2F] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-sm cursor-pointer"
+          aria-label="jobPulse Home"
         >
-          Job<span className="italic text-[#3F5D9E]">match</span>
+          Job<span className="italic text-[#3F5D9E]">Pulse</span>
         </Link>
 
-        {/* Right: Desktop Navigation Links (Pricing removed) */}
+      
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2B2F]">
           <Link
             href="#how"
-            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-[4px] cursor-pointer"
+            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-sm cursor-pointer"
           >
             How it works
           </Link>
           <Link
             href="#sources"
-            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-[4px] cursor-pointer"
+            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-sm cursor-pointer"
           >
             Sources
           </Link>
           <Link
             href="/login"
-            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-[4px] cursor-pointer"
+            className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-sm cursor-pointer"
           >
             Sign in
           </Link>
@@ -48,12 +48,11 @@ export default function Header() {
           </Link>
         </nav>
 
-        {/* Mobile: Hamburger Button */}
         <div className="flex md:hidden">
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="inline-flex items-center justify-center p-2 rounded-[8px] text-[#2A2B2F] hover:bg-[#F2EFE9] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] cursor-pointer"
+            className="inline-flex items-center justify-center p-2 rounded-lg text-[#2A2B2F] hover:bg-[#F2EFE9] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] cursor-pointer"
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle navigation menu"
           >
@@ -62,7 +61,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+    
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-[#E5E1D8] bg-[#FAF9F6] px-4 py-6 shadow-none">
           <nav className="flex flex-col gap-4 text-base font-medium text-[#2A2B2F]">

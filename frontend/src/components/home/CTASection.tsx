@@ -8,7 +8,7 @@ import ScrollReveal from "@/src/components/ui/ScrollReveal";
 export function CTASection() {
   return (
     <section className="py-24 border-t border-[#E5E1D8]">
-      <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-285 px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             {/* Left: Serif H2 with one italic accent */}
