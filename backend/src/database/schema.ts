@@ -16,7 +16,7 @@ export const users = mysqlTable("users", {
     .notNull()
     .unique(),
 
-  passwordHash: varchar("password_hash", { length: 255 })
+  password: varchar("password", { length: 255 })
     .notNull(),
 
   fullName: varchar("full_name", { length: 255 })
@@ -39,6 +39,8 @@ export const users = mysqlTable("users", {
     .notNull(),
     
 });
+
+
 export const refreshTokens = mysqlTable("refresh_tokens", {
   id: bigint("id", { mode: "number" })
     .autoincrement()

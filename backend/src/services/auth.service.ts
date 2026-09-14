@@ -42,7 +42,7 @@ export const registerUser = async ({
 
   const result = await db.insert(users).values({
     email,
-    passwordHash,
+    password: passwordHash,
     fullName,
   });
 
@@ -73,14 +73,14 @@ export const loginUser = async ({
 
   const passwordMatch = await bcrypt.compare(
     password,
-    user.passwordHash
+    user.password
   );
 
   if (!passwordMatch) {
     throw new Error("Invalid email or password");
   }
 
-  // Access token
+  
   const accessToken = jwt.sign(
     {
       userId: user.id,
@@ -93,16 +93,16 @@ export const loginUser = async ({
     }
   );
 
-  // Generate refresh token
+
   const refreshToken = crypto.randomBytes(64).toString("hex");
 
-  // Hash refresh token before storing it
+ 
   const tokenHash = crypto
     .createHash("sha256")
     .update(refreshToken)
     .digest("hex");
 
-  // Refresh token expires in 7 days
+  
   const expiresAt = new Date(
     Date.now() + 7 * 24 * 60 * 60 * 1000
   );
@@ -114,27 +114,19 @@ export const loginUser = async ({
   });
 
   return {
-    user: {
-      id: user.id,
-      email: user.email,
-      fullName: user.fullName,
-      role: user.role,
-      isVerified: user.isVerified,
-    },
     accessToken,
-    refreshToken,
   };
 };
 export const refreshAccessToken = async ({
   refreshToken,
 }: RefreshTokenInput) => {
-  // Hash the received refresh token
+ 
   const tokenHash = crypto
     .createHash("sha256")
     .update(refreshToken)
     .digest("hex");
 
-  // Find token in database
+
   const result = await db
     .select()
     .from(refreshTokens)
@@ -147,7 +139,7 @@ export const refreshAccessToken = async ({
     throw new Error("Invalid refresh token");
   }
 
-  // Check expiration
+
   if (storedToken.expiresAt.getTime() < Date.now()) {
     await db
       .delete(refreshTokens)
@@ -156,7 +148,7 @@ export const refreshAccessToken = async ({
     throw new Error("Refresh token expired");
   }
 
-  // Find user
+
   const userResult = await db
     .select()
     .from(users)
@@ -169,12 +161,12 @@ export const refreshAccessToken = async ({
     throw new Error("User not found");
   }
 
-  // Delete old refresh token = rotation
+
   await db
     .delete(refreshTokens)
     .where(eq(refreshTokens.id, storedToken.id));
 
-  // Create new access token
+
   const accessToken = jwt.sign(
     {
       userId: user.id,
@@ -187,7 +179,7 @@ export const refreshAccessToken = async ({
     }
   );
 
-  // Create new refresh token
+
   const newRefreshToken = crypto.randomBytes(64).toString("hex");
 
   const newTokenHash = crypto
