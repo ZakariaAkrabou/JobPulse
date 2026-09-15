@@ -60,3 +60,49 @@ export const refreshTokens = mysqlTable("refresh_tokens", {
     .defaultNow()
     .notNull(),
 });
+
+export const emailVerificationTokens = mysqlTable(
+  "email_verification_tokens",
+  {
+    id: bigint("id", { mode: "number" })
+      .autoincrement()
+      .primaryKey(),
+
+    userId: bigint("user_id", { mode: "number" })
+      .notNull(),
+
+    tokenHash: varchar("token_hash", { length: 255 })
+      .notNull()
+      .unique(),
+
+    expiresAt: timestamp("expires_at")
+      .notNull(),
+
+    createdAt: timestamp("created_at")
+      .defaultNow()
+      .notNull(),
+  }
+);
+
+export const passwordResetTokens = mysqlTable(
+  "password_reset_tokens",
+  {
+    id: bigint("id", { mode: "number" })
+      .autoincrement()
+      .primaryKey(),
+
+    userId: bigint("user_id", { mode: "number" })
+      .notNull(),
+
+    tokenHash: varchar("token_hash", { length: 255 })
+      .notNull()
+      .unique(),
+
+    expiresAt: timestamp("expires_at")
+      .notNull(),
+
+    createdAt: timestamp("created_at")
+      .defaultNow()
+      .notNull(),
+  }
+);

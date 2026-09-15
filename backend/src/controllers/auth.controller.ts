@@ -7,6 +7,9 @@ import {
   getCurrentUser,
   getProfile,
   updateProfile,
+  verifyEmail,
+   forgotPassword,
+   resetPassword,
 } from "../services/auth.service.js";
 import type { AuthRequest } from "../middleware/auth.middleware.js";
 
@@ -210,6 +213,147 @@ export const updateUserProfile = async (
       error.message === "User not found"
     ) {
       return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+export const verifyEmailController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "token is required",
+      });
+    }
+
+    const result = await verifyEmail({
+      token,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "Invalid verification token"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "Verification token expired"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    if (
+      error instanceof Error &&
+      error.message === "User not found"
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+export const forgotPasswordController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "email is required",
+      });
+    }
+
+    const result = await forgotPassword({
+      email,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+      resetToken: result.resetToken,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "User not found"
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: error.message,
+      });
+    }
+
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+export const resetPasswordController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    const result = await resetPassword({
+      token,
+      newPassword,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: result.message,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      (
+        error.message === "Invalid reset token" ||
+        error.message === "Reset token expired"
+      )
+    ) {
+      return res.status(400).json({
         success: false,
         message: error.message,
       });

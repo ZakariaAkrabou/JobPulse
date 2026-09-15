@@ -36,7 +36,16 @@ export const refreshSchema = z.object({
 export const updateProfileSchema = z.object({
 	fullName,
 });
-
+export const verifyEmailSchema = z.object({
+	token: z.string().trim().min(1, "Verification token is required"),
+});
+export const forgotPasswordSchema = z.object({
+  email,
+});
+export const resetPasswordSchema = z.object({
+  token: z.string().trim().min(1, "Reset token is required"),
+  newPassword: password,
+});
 export const validate = (schema: z.ZodType) => (
 	req: Request,
 	res: Response,
