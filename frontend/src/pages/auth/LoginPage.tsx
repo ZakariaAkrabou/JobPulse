@@ -73,7 +73,7 @@ export default function LoginPage() {
           
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Welcome back to Job<span className="italic text-[#3F5D9E]">match</span>.
+              Welcome back to Job<span className="italic text-[#3F5D9E]">pulse</span>.
             </h1>
 
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[38ch] mx-auto">

@@ -61,7 +61,7 @@ export default function ForgotPassword() {
           {/* Headline */}
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Reset your Job<span className="italic text-[#3F5D9E]">match</span> password.
+              Reset your Job<span className="italic text-[#3F5D9E]">pulse</span> password.
             </h1>
 
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[38ch] mx-auto">

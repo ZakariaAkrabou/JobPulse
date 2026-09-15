@@ -75,7 +75,7 @@ export default function RegistrePage() {
         >
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Create your Job<span className="italic text-[#3F5D9E]">match</span> account.
+              Create your Job<span className="italic text-[#3F5D9E]">pulse</span> account.
             </h1>
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[40ch] mx-auto">
               Upload your resume once, then let us surface matching roles from LinkedIn, Indeed, Adzuna, and Remotive.
