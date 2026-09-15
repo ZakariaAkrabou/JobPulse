@@ -48,7 +48,6 @@ export default function LoginPage() {
     setError("");
     setIsLoading(true);
 
-    // Simulate authentic authentication response
     setTimeout(() => {
       setIsLoading(false);
       setSuccess(true);
@@ -58,11 +57,7 @@ export default function LoginPage() {
     }, 800);
   };
 
-  const handleFillDemo = () => {
-    setEmail("sarah.candidate@jobmatch.app");
-    setPassword("calmhorizon2026");
-    setError("");
-  };
+
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAF9F6] text-[#2A2B2F]">
@@ -75,7 +70,7 @@ export default function LoginPage() {
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="w-full max-w-110"
         >
-          {/* Headline */}
+          
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
               Welcome back to Job<span className="italic text-[#3F5D9E]">match</span>.
@@ -122,7 +117,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Password Input */}
+            
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label
@@ -132,11 +127,7 @@ export default function LoginPage() {
                     Password
                   </label>
                   <Link
-                    href="#forgot"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleFillDemo();
-                    }}
+                    href="/forgot-password"
                     className="font-mono text-xs text-[#3F5D9E] hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-xs"
                   >
                     Forgot password?
@@ -171,7 +162,7 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              {/* Remember Me */}
+            
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input
@@ -186,7 +177,7 @@ export default function LoginPage() {
                 </label>
               </div>
 
-              {/* Error Message */}
+            
               {error && (
                 <div
                   id="login-error"
@@ -219,7 +210,7 @@ export default function LoginPage() {
                   <span>Verified ✓</span>
                 ) : (
                   <>
-                    <span>Sign in to JobMatch</span>
+                    <span>Sign in to JobPulse</span>
                     <FiArrowRight className="h-4 w-4" />
                   </>
                 )}
