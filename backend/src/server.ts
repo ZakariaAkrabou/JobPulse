@@ -1,11 +1,10 @@
 import app from "./app.js";
 import env from "./config/env.js";
-import { db } from "./config/database.js";
-import { sql } from "drizzle-orm";
+import { prisma } from "./config/database.js";
 
 const startServer = async () => {
   try {
-    await db.execute(sql`SELECT 1`);
+    await prisma.$queryRaw`SELECT 1`;
 
     console.log("Database connected successfully");
 
