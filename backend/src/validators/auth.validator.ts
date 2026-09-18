@@ -1,60 +1,67 @@
-import type { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
-const email = z
-	.string()
-	.trim()
-	.email("Please provide a valid email address")
-	.max(255, "Email must be at most 255 characters");
-
-const password = z
-	.string()
-	.min(8, "Password must be at least 8 characters")
-	.max(72, "Password must be at most 72 characters");
-
-const fullName = z
-	.string()
-	.trim()
-	.min(2, "Full name must be at least 2 characters")
-	.max(255, "Full name must be at most 255 characters");
-
 export const registerSchema = z.object({
-	email,
-	password,
-	fullName,
-});
+  email: z
+    .string({ error: "Email is required" })
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
 
+  password: z
+    .string({ error: "Password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .max(72, "Password must be at most 72 characters"),
+
+  fullName: z
+    .string({ error: "Full name is required" })
+    .min(2, "Full name must be at least 2 characters")
+    .max(150, "Full name must be at most 150 characters")
+    .trim(),
+});
 export const loginSchema = z.object({
-	email,
-	password,
+  email: z
+    .string({ error: "Email is required" })
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
+  password: z.string({ error: "Password is required" }).min(1),
 });
 
-export const refreshSchema = z.object({
-	refreshToken: z.string().trim().min(1, "Refresh token is required"),
+
+
+export const verifyEmailSchema = z.object({
+  token: z
+    .string({ error: "Token is required" })
+    .length(64, "Invalid token format")
+    .regex(/^[a-f0-9]+$/, "Invalid token format"),
 });
 
-export const updateProfileSchema = z.object({
-	fullName,
+
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string({ error: "Email is required" })
+    .email("Invalid email address")
+    .toLowerCase()
+    .trim(),
 });
 
-export const validate = (schema: z.ZodType) => (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-) => {
-	const result = schema.safeParse(req.body);
 
-	if (!result.success) {
-		return res.status(400).json({
-			success: false,
-			message: "Validation failed",
-			errors: result.error.issues.map((issue) => ({
-				field: issue.path.join("."),
-				message: issue.message,
-			})),
-		});
-	}
 
-	req.body = result.data;
-	next();
-};
+export const resetPasswordSchema = z.object({
+  token: z
+    .string({ error: "Token is required" })
+    .length(64, "Invalid token format")
+    .regex(/^[a-f0-9]+$/, "Invalid token format"),
+
+  newPassword: z
+    .string({ error: "Password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .max(72, "Password must be at most 72 characters"),
+});
+
+
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
+export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;

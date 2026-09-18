@@ -1,29 +1,31 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import env from "../config/env.js";
+import type { RoleName } from "../generated/prisma/enums.js";
+
+type AccessTokenPayload = {
+  sub: string;
+  role: RoleName;
+};
 
 export interface AuthRequest extends Request {
   user?: {
-    userId: number;
-    email: string;
-    role: string;
+    userId: string;
+    role: RoleName;
   };
 }
 
 export const authenticate = (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  const authHeader = req.headers.authorization;
+  const fromCookie = req.cookies?.access_token;
+  const fromHeader = req.headers.authorization?.startsWith("Bearer ")
+    ? req.headers.authorization.slice(7)
+    : undefined;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({
-      success: false,
-      message: "Access token required",
-    });
-  }
-
-  const token = authHeader.split(" ")[1];
+  const token = fromCookie ?? fromHeader;
 
   if (!token) {
     return res.status(401).json({
@@ -35,17 +37,17 @@ export const authenticate = (
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "development-secret"
-    ) as {
-      userId: number;
-      email: string;
-      role: string;
+      env.JWT_ACCESS_SECRET,
+    ) as AccessTokenPayload;
+
+    req.user = {
+      userId: decoded.sub,
+      role: decoded.role,
     };
 
-    req.user = decoded;
-
     next();
-  } catch {
+  } catch (err) {
+    console.error("JWT verify failed:", (err as Error).message);
     return res.status(401).json({
       success: false,
       message: "Invalid or expired access token",
