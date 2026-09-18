@@ -6,15 +6,22 @@
   "directories": {
     "test": "vitest"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+  "overrides": {
+  "@prisma/prisma-schema-wasm": "6.19.0-25.d1e58fa5b6a3c3a6b1f6e8b1e4c4e8a1b2c3d4e5"
   },
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:test": "cross-env DOTENV_CONFIG_PATH=.env.test prisma migrate deploy",
+    "db:generate": "prisma generate",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
+  
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -34,6 +41,7 @@
     "@types/node": "^26.5.0",
     "@types/nodemailer": "^8.0.2",
     "@types/supertest": "^7.2.1",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "nodemon": "^3.1.14",
     "prisma": "^6.19.3",
