@@ -11,7 +11,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
- 
+  url      = env("DATABASE_URL")
 }
 enum RoleName {
   client
@@ -47,8 +47,29 @@ model User {
   refreshToken          String?   @map("refresh_token") @db.VarChar(500)
   refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
 
+  profile UserProfile?
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("users")
 }
+
+model UserProfile {
+  id     BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  userId BigInt @unique @map("user_id") @db.UnsignedBigInt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  phone          String? @db.VarChar(30)
+  location       String? @db.VarChar(150)
+  currentTitle   String? @map("current_title") @db.VarChar(150)
+  experienceYears Int?   @map("experience_years") @db.UnsignedTinyInt
+  summary        String? @db.Text
+
+  resumeUrl        String? @map("resume_url") @db.VarChar(500)
+  resumeParsedText String? @map("resume_parsed_text") @db.LongText
+  resumeParsedJson Json?   @map("resume_parsed_json")
+
+  @@map("user_profiles")
+}
+

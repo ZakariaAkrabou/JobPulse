@@ -1,12 +1,17 @@
 import express from "express";
-import authRoutes from "./routes/auth.routes.js";
+import cookieParser from "cookie-parser";
 import {errorHandler} from "./middleware/error.middleware.js"
 
+import authRoutes from "./routes/auth.routes.js";
+import userRoutes from "./routes/user.routes.js"
 
 const app = express();
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(errorHandler);
+app.use(cookieParser());
+
 
 
 
@@ -14,6 +19,7 @@ app.use(errorHandler);
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 
 
 
@@ -24,5 +30,8 @@ app.get("/", (req, res) => {
         message: "Server is running!",
     });
 });
+
+
+app.use(errorHandler);
 
 export default app;

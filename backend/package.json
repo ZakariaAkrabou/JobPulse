@@ -7,7 +7,7 @@
     "test": "vitest"
   },
   "overrides": {
-  "@prisma/prisma-schema-wasm": "6.19.0-25.d1e58fa5b6a3c3a6b1f6e8b1e4c4e8a1b2c3d4e5"
+    "@prisma/prisma-schema-wasm": "6.19.0-25.d1e58fa5b6a3c3a6b1f6e8b1e4c4e8a1b2c3d4e5"
   },
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
@@ -21,16 +21,19 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "@types/cookie-parser": "^1.4.10",
     "bcrypt": "^6.0.0",
+    "cloudinary": "^2.11.0",
+    "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
     "nodemailer": "^10.0.10",
     "zod": "^4.6.5"
   },
@@ -38,6 +41,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^26.5.0",
     "@types/nodemailer": "^8.0.2",
     "@types/supertest": "^7.2.1",

@@ -59,7 +59,17 @@ export const resetPasswordSchema = z.object({
     .max(72, "Password must be at most 72 characters"),
 });
 
+export const changePasswordSchema = z.object({
+  currentPassword: z
+    .string({ error: "Current password is required" })
+    .min(1, "Current password is required"),
 
+  newPassword: z
+    .string({ error: "New password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .max(72, "Password must be at most 72 characters"),
+});
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

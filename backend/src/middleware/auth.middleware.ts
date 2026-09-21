@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import env from "../config/env.js";
+import type { AuthUser } from "../types/auth.js";
 import type { RoleName } from "../generated/prisma/enums.js";
 
 type AccessTokenPayload = {
@@ -8,15 +9,8 @@ type AccessTokenPayload = {
   role: RoleName;
 };
 
-export interface AuthRequest extends Request {
-  user?: {
-    userId: string;
-    role: RoleName;
-  };
-}
-
 export const authenticate = (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -40,7 +34,7 @@ export const authenticate = (
       env.JWT_ACCESS_SECRET,
     ) as AccessTokenPayload;
 
-    req.user = {
+    (req as Request & { user?: AuthUser }).user = {
       userId: decoded.sub,
       role: decoded.role,
     };
