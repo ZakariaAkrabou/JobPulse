@@ -51,23 +51,32 @@ export async function uploadResumeToCloudinary(
   });
 }
 
+
+
 export async function updateResumeFields(
   userId: bigint,
-  data: { resumeUrl: string; resumeParsedText: string | null },
+  data: {
+    resumeUrl: string | null;
+    resumeParsedText: string | null;
+    resumeParsedJson: unknown | null;
+  },
 ) {
   return prisma.userProfile.upsert({
     where: { userId },
     update: {
       resumeUrl: data.resumeUrl,
       resumeParsedText: data.resumeParsedText,
+      resumeParsedJson: data.resumeParsedJson as any,
     },
     create: {
       userId,
       resumeUrl: data.resumeUrl,
       resumeParsedText: data.resumeParsedText,
+      resumeParsedJson: data.resumeParsedJson as any,
     },
   });
 }
+
 
 export async function findUserById(id: bigint) {
   return prisma.user.findUnique({ where: { id } });

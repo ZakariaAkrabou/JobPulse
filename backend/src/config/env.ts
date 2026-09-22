@@ -23,6 +23,10 @@ const env = {
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || "",
 
 
+  RAPIDAPI_KEY: process.env.RAPIDAPI_KEY || "",
+  RAPIDAPI_HOST: process.env.RAPIDAPI_HOST || "",
+
+
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || "localhost",
 };
 

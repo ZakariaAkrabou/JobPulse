@@ -1,8 +1,10 @@
 import type { Request, Response } from "express";
 import { getAuthUser } from "../types/auth.js";
-import { updateProfileSchema,changePasswordSchema } from "../validators/profile.validator.js";
-import {getProfileByUserId,upsertProfile,uploadResumeToCloudinary,updateResumeFields,findUserById,changeUserPassword,} from "../services/profile.service.js";
+import { updateProfileSchema, changePasswordSchema } from "../validators/profile.validator.js";
+import { getProfileByUserId, upsertProfile, uploadResumeToCloudinary, updateResumeFields, findUserById, changeUserPassword, } from "../services/profile.service.js";
+import { parseResumeFromBuffer, saveParsedResume } from "../services/parse.service.js"
 import { verifyPassword, hashPassword } from "../utils/hash.js";
+import axios from "axios";
 
 
 export async function getProfile(req: Request, res: Response) {
@@ -14,10 +16,10 @@ export async function getProfile(req: Request, res: Response) {
     data: {
       profile: profile
         ? {
-            ...profile,
-            id: profile.id.toString(),
-            userId: profile.userId.toString(),
-          }
+          ...profile,
+          id: profile.id.toString(),
+          userId: profile.userId.toString(),
+        }
         : null,
     },
   });
@@ -71,6 +73,7 @@ export async function uploadResume(req: Request, res: Response) {
   const profile = await updateResumeFields(BigInt(userId), {
     resumeUrl: url,
     resumeParsedText: null,
+    resumeParsedJson: null,
   });
 
   return res.status(200).json({
@@ -87,7 +90,6 @@ export async function uploadResume(req: Request, res: Response) {
     },
   });
 }
-
 
 export async function changePassword(req: Request, res: Response) {
   const { userId } = getAuthUser(req);
@@ -139,3 +141,42 @@ export async function changePassword(req: Request, res: Response) {
     message: "Password changed successfully. Please log in again.",
   });
 }
+
+
+export async function parseResume(req: Request, res: Response) {
+  const { userId } = getAuthUser(req);
+
+  const profile = await getProfileByUserId(BigInt(userId));
+
+  if (!profile?.resumeUrl) {
+    return res.status(400).json({
+      success: false,
+      message: "No resume uploaded. Upload a resume first.",
+    });
+  }
+
+  if (profile.resumeParsedJson) {
+    return res.status(200).json({
+      success: true,
+      message: "Resume already parsed (cached)",
+      data: { parsedJson: profile.resumeParsedJson },
+    });
+  }
+  
+  const pdfResponse = await axios.get(profile.resumeUrl, {
+    responseType: "arraybuffer",
+  });
+  const pdfBuffer = Buffer.from(pdfResponse.data);
+
+  const parsedJson = await parseResumeFromBuffer(pdfBuffer);
+
+  await saveParsedResume(BigInt(userId), parsedJson);
+
+  return res.status(200).json({
+    success: true,
+    message: "Resume parsed successfully",
+    data: { parsedJson },
+  });
+}
+
+
