@@ -3,7 +3,8 @@ import cookieParser from "cookie-parser";
 import {errorHandler} from "./middleware/error.middleware.js"
 
 import authRoutes from "./routes/auth.routes.js";
-import userRoutes from "./routes/user.routes.js"
+import userRoutes from "./routes/user.routes.js";
+import jobRoutes from "./routes/preferences.routes.js";
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-
+app.use("/api/jobs" ,jobRoutes);
 
 
 

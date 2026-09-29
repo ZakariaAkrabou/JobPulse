@@ -27,6 +27,27 @@ model Role {
   @@map("roles")
 }
 
+enum JobType {
+  full_time
+  part_time
+  contract
+  internship
+  freelance
+}
+
+enum WorkMode {
+  remote
+  onsite
+  hybrid
+}
+
+enum DateRange {
+  h24
+  d7
+  d30
+  any
+}
+
 model User {
   id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   email        String    @unique @db.VarChar(255)
@@ -48,6 +69,7 @@ model User {
   refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
 
   profile UserProfile?
+  preferences UserJobPreferences?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -71,5 +93,21 @@ model UserProfile {
   resumeParsedJson Json?   @map("resume_parsed_json")
 
   @@map("user_profiles")
+}
+
+model UserJobPreferences {
+  id     BigInt @id @default(autoincrement()) @db.UnsignedBigInt
+  userId BigInt @unique @map("user_id") @db.UnsignedBigInt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  jobType        JobType?   @map("job_type")
+  workMode       WorkMode?  @map("work_mode")
+  dateRange      DateRange? @map("date_range")
+  keywords       String?    @db.VarChar(255)
+  locationFilter String?    @map("location_filter") @db.VarChar(150)
+  salaryMin      Int?       @map("salary_min")
+  currency       String?    @db.VarChar(3)
+
+  @@map("user_job_preferences")
 }
 
