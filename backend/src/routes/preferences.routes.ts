@@ -5,6 +5,6 @@ import {getPreferences, updatePreferences,} from "../controllers/preferences.con
 const router = Router();
 
 router.get("/preferences", authenticate, getPreferences);
-router.put("/update-preferences", authenticate, updatePreferences);
+router.put("/preferences", authenticate, updatePreferences);
 
 export default router;

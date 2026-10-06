@@ -4,7 +4,8 @@ import {errorHandler} from "./middleware/error.middleware.js"
 
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
-import jobRoutes from "./routes/preferences.routes.js";
+import preferencesRoutes from "./routes/preferences.routes.js";
+import sourceRoutes from "./routes/sources.routes.js";
 
 const app = express();
 
@@ -21,9 +22,9 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/jobs" ,jobRoutes);
-
-
+app.use("/api/user", preferencesRoutes);
+app.use("/api/sources", sourceRoutes);
+app.use("/api/user/sources", sourceRoutes);
 
 app.get("/", (req, res) => {
     res.json({

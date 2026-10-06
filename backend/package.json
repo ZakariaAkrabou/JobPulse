@@ -17,6 +17,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:test": "cross-env DOTENV_CONFIG_PATH=.env.test prisma migrate deploy",
     "db:generate": "prisma generate",
+    "db:seed:sources": "tsx prisma/seed-sources.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"
