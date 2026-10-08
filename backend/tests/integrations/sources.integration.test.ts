@@ -19,6 +19,7 @@ async function seedSources() {
 
 describe("Sources API", () => {
   let token: string;
+  let userId: string;
 
   beforeEach(async () => {
     await resetDb();
@@ -26,56 +27,154 @@ describe("Sources API", () => {
     await seedSources();
     const result = await createTestUser();
     token = result.token;
+    userId = result.userId;
   });
 
-  describe("GET /api/user/sources", () => {
-    it("returns the list of active sources", async () => {
+  describe("GET /api/user/sources/list", () => {
+    it("returns all active sources with isSelected: false by default", async () => {
       const res = await request(app)
-        .get("/api/user/sources")
+        .get("/api/user/sources/list")
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.status).toBe(200);
       expect(res.body.data.sources).toHaveLength(4);
-      const names = res.body.data.sources.map((s: any) => s.name);
-      expect(names).toEqual(["Adzuna", "JSearch", "RemoteOK", "Remotive"]); // alphabetical
+      for (const s of res.body.data.sources) {
+        expect(s.isSelected).toBe(false);
+        expect(s.isEnabled).toBe(false);
+      }
     });
 
-    it("never exposes api_key_env", async () => {
+    it("returns 401 without a token", async () => {
+      const res = await request(app).get("/api/user/sources/list");
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe("POST /api/user/sources/:sourceId/select", () => {
+    it("selects a source and returns isSelected: true", async () => {
+      const source = await prisma.jobSource.findFirstOrThrow({
+        where: { name: "JSearch" },
+      });
+
       const res = await request(app)
-        .get("/api/user/sources")
+        .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
 
-      const body = JSON.stringify(res.body);
-      expect(body).not.toContain("apiKeyEnv");
-      expect(body).not.toContain("api_key_env");
+      expect(res.status).toBe(200);
+      expect(res.body.data.source.isSelected).toBe(true);
+      expect(res.body.data.source.isEnabled).toBe(true);
+
+      const row = await prisma.userSelectedSource.findUnique({
+        where: {
+          userId_sourceId: {
+            userId: BigInt(userId),
+            sourceId: source.id,
+          },
+        },
+      });
+      expect(row).not.toBeNull();
+      expect(row!.isEnabled).toBe(true);
     });
 
-    it("does not return inactive sources", async () => {
-      // Flip one to inactive
-      await prisma.jobSource.update({
+    it("is idempotent — selecting twice returns 200 both times", async () => {
+      const source = await prisma.jobSource.findFirstOrThrow({
+        where: { name: "Remotive" },
+      });
+
+      const res1 = await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+      const res2 = await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res1.status).toBe(200);
+      expect(res2.status).toBe(200);
+
+
+      const count = await prisma.userSelectedSource.count({
+        where: { userId: BigInt(userId), sourceId: source.id },
+      });
+      expect(count).toBe(1);
+    });
+
+    it("returns 404 for a non-existent source", async () => {
+      const res = await request(app)
+        .post("/api/user/sources/999999/select")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(404);
+    });
+
+    it("returns 400 for an inactive source", async () => {
+      const source = await prisma.jobSource.findFirstOrThrow({
         where: { name: "Adzuna" },
+      });
+      await prisma.jobSource.update({
+        where: { id: source.id },
         data: { isActive: false },
       });
 
       const res = await request(app)
-        .get("/api/user/sources")
+        .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
 
-      expect(res.body.data.sources).toHaveLength(3);
-      const names = res.body.data.sources.map((s: any) => s.name);
-      expect(names).not.toContain("Adzuna");
+      expect(res.status).toBe(400);
+    });
+
+    it("returns 400 for an invalid sourceId", async () => {
+      const res = await request(app)
+        .post("/api/user/sources/abc/select")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(400);
     });
 
     it("returns 401 without a token", async () => {
-      const res = await request(app).get("/api/user/sources");
+      const res = await request(app).post("/api/user/sources/1/select");
       expect(res.status).toBe(401);
     });
 
-    it("returns 401 with an invalid token", async () => {
+    it("does not let user A affect user B's selections", async () => {
+      const other = await createTestUser({ email: "other@example.com" });
+      const source = await prisma.jobSource.findFirstOrThrow({
+        where: { name: "RemoteOK" },
+      });
+
+   
+      await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+  
       const res = await request(app)
-        .get("/api/user/sources")
-        .set("Authorization", "Bearer not-a-real-token");
-      expect(res.status).toBe(401);
+        .get("/api/user/sources/list")
+        .set("Authorization", `Bearer ${other.token}`);
+
+      const remoteOk = res.body.data.sources.find(
+        (s: any) => s.name === "RemoteOK",
+      );
+      expect(remoteOk.isSelected).toBe(false);
+    });
+
+    it("reflects selection in GET /sources/list", async () => {
+      const source = await prisma.jobSource.findFirstOrThrow({
+        where: { name: "JSearch" },
+      });
+
+      await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      const res = await request(app)
+        .get("/api/user/sources/list")
+        .set("Authorization", `Bearer ${token}`);
+
+      const jsearch = res.body.data.sources.find(
+        (s: any) => s.name === "JSearch",
+      );
+      expect(jsearch.isSelected).toBe(true);
+      expect(jsearch.isEnabled).toBe(true);
     });
   });
 });

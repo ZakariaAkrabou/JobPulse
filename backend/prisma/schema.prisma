@@ -122,7 +122,7 @@ model JobSource {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  selectedSources UserSelectedSource[]
+  userSelections UserSelectedSource[]
 
   @@map("job_sources")
 }

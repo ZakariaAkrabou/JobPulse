@@ -1,33 +1,33 @@
 import type { Request, Response } from "express";
-import { findSourceById, listActiveSources, selectSourceForUser } from "../services/sources.service.js";
+import { findSourceById, listActiveSourcesForUser, selectSourceForUser } from "../services/sources.service.js";
 import { sourceIdParamSchema } from "../validators/sources.validator.js";
+import { getAuthUser } from "../types/auth.js";
 
 
 
-function serializeSource(source: any) {
-  return {
-    id: source.id.toString(),
-    name: source.name,
-    isActive: source.isActive,
-  };
-}
 
-export async function getSources(_req: Request, res: Response) {
+export async function getSources(req: Request, res: Response) {
+  const { userId } = getAuthUser(req);
 
-  const sources = await listActiveSources();
+  const sources = await listActiveSourcesForUser(BigInt(userId));
 
   return res.status(200).json({
     success: true,
     data: {
-      sources: sources.map(serializeSource),
+      sources: sources.map((s) => ({
+        id: s.id.toString(),
+        name: s.name,
+        isSelected: s.isSelected,
+        isEnabled: s.isEnabled,
+      })),
     },
-  })
+  });
 }
 
 export async function selectSource(req: Request, res: Response) {
- 
-  const parsed = sourceIdParamSchema.safeParse(req.params);
+  const { userId } = getAuthUser(req);
 
+  const parsed = sourceIdParamSchema.safeParse(req.params);
   if (!parsed.success) {
     return res.status(400).json({
       success: false,
@@ -55,7 +55,7 @@ export async function selectSource(req: Request, res: Response) {
     });
   }
 
-  await selectSourceForUser(BigInt(sourceId), sourceId);
+  await selectSourceForUser(BigInt(userId), sourceId);
 
   return res.status(200).json({
     success: true,
@@ -70,4 +70,3 @@ export async function selectSource(req: Request, res: Response) {
     },
   });
 }
-
