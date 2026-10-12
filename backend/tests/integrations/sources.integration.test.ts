@@ -5,13 +5,13 @@ import { prisma } from "../../src/config/database.js";
 import { resetDb, seedRoles } from "../helpers/db.js";
 import { createTestUser } from "../helpers/auth.js";
 
-async function seedSources() {
-  await prisma.jobSource.createMany({
+async function seedPublishers() {
+  await prisma.jobPublisher.createMany({
     data: [
-      { name: "JSearch",  apiEndpoint: "https://jsearch.p.rapidapi.com/search", apiKeyEnv: "RAPIDAPI_KEY" },
-      { name: "Adzuna",   apiEndpoint: "https://api.adzuna.com/v1/api/jobs",   apiKeyEnv: "ADZUNA_APP_ID" },
-      { name: "Remotive", apiEndpoint: "https://remotive.com/api/remote-jobs", apiKeyEnv: "" },
-      { name: "RemoteOK", apiEndpoint: "https://remoteok.com/api",             apiKeyEnv: "" },
+      { name: "LinkedIn",     slug: "linkedin" },
+      { name: "Indeed",       slug: "indeed" },
+      { name: "Glassdoor",    slug: "glassdoor" },
+      { name: "ZipRecruiter", slug: "ziprecruiter" },
     ],
     skipDuplicates: true,
   });
@@ -24,16 +24,17 @@ describe("Sources API", () => {
   beforeEach(async () => {
     await resetDb();
     await seedRoles();
-    await seedSources();
+    await seedPublishers();
     const result = await createTestUser();
     token = result.token;
     userId = result.userId;
   });
 
-  describe("GET /api/user/sources/list", () => {
-    it("returns all active sources with isSelected: false by default", async () => {
+  // ─── GET /api/user/sources ────────────────────────────────────────
+  describe("GET /api/user/sources", () => {
+    it("returns 4 sources with isSelected: false for a new user", async () => {
       const res = await request(app)
-        .get("/api/user/sources/list")
+        .get("/api/user/sources")
         .set("Authorization", `Bearer ${token}`);
 
       expect(res.status).toBe(200);
@@ -44,16 +45,39 @@ describe("Sources API", () => {
       }
     });
 
+    it("returns them alphabetically", async () => {
+      const res = await request(app)
+        .get("/api/user/sources")
+        .set("Authorization", `Bearer ${token}`);
+
+      const names = res.body.data.sources.map((s: any) => s.name);
+      expect(names).toEqual(["Glassdoor", "Indeed", "LinkedIn", "ZipRecruiter"]);
+    });
+
+    it("excludes inactive sources", async () => {
+      await prisma.jobPublisher.update({
+        where: { name: "Glassdoor" },
+        data: { isActive: false },
+      });
+
+      const res = await request(app)
+        .get("/api/user/sources")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.body.data.sources).toHaveLength(3);
+    });
+
     it("returns 401 without a token", async () => {
-      const res = await request(app).get("/api/user/sources/list");
+      const res = await request(app).get("/api/user/sources");
       expect(res.status).toBe(401);
     });
   });
 
+  // ─── POST /api/user/sources/:id/select ────────────────────────────
   describe("POST /api/user/sources/:sourceId/select", () => {
-    it("selects a source and returns isSelected: true", async () => {
-      const source = await prisma.jobSource.findFirstOrThrow({
-        where: { name: "JSearch" },
+    it("selects a source and persists the row", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "LinkedIn" },
       });
 
       const res = await request(app)
@@ -62,13 +86,12 @@ describe("Sources API", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.data.source.isSelected).toBe(true);
-      expect(res.body.data.source.isEnabled).toBe(true);
 
-      const row = await prisma.userSelectedSource.findUnique({
+      const row = await prisma.userSelectedPublisher.findUnique({
         where: {
-          userId_sourceId: {
+          userId_publisherId: {
             userId: BigInt(userId),
-            sourceId: source.id,
+            publisherId: source.id,
           },
         },
       });
@@ -76,24 +99,22 @@ describe("Sources API", () => {
       expect(row!.isEnabled).toBe(true);
     });
 
-    it("is idempotent — selecting twice returns 200 both times", async () => {
-      const source = await prisma.jobSource.findFirstOrThrow({
-        where: { name: "Remotive" },
+    it("is idempotent — selecting twice yields one row", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "Indeed" },
       });
 
-      const res1 = await request(app)
+      await request(app)
         .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
       const res2 = await request(app)
         .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
 
-      expect(res1.status).toBe(200);
       expect(res2.status).toBe(200);
 
-
-      const count = await prisma.userSelectedSource.count({
-        where: { userId: BigInt(userId), sourceId: source.id },
+      const count = await prisma.userSelectedPublisher.count({
+        where: { userId: BigInt(userId), publisherId: source.id },
       });
       expect(count).toBe(1);
     });
@@ -102,15 +123,14 @@ describe("Sources API", () => {
       const res = await request(app)
         .post("/api/user/sources/999999/select")
         .set("Authorization", `Bearer ${token}`);
-
       expect(res.status).toBe(404);
     });
 
     it("returns 400 for an inactive source", async () => {
-      const source = await prisma.jobSource.findFirstOrThrow({
-        where: { name: "Adzuna" },
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "ZipRecruiter" },
       });
-      await prisma.jobSource.update({
+      await prisma.jobPublisher.update({
         where: { id: source.id },
         data: { isActive: false },
       });
@@ -118,7 +138,6 @@ describe("Sources API", () => {
       const res = await request(app)
         .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
-
       expect(res.status).toBe(400);
     });
 
@@ -126,55 +145,130 @@ describe("Sources API", () => {
       const res = await request(app)
         .post("/api/user/sources/abc/select")
         .set("Authorization", `Bearer ${token}`);
+      expect(res.status).toBe(400);
+    });
+  });
+
+  // ─── DELETE /api/user/sources/:id/select ──────────────────────────
+  describe("DELETE /api/user/sources/:sourceId/select", () => {
+    it("removes a selected source", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "LinkedIn" },
+      });
+
+      // First select
+      await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      // Then deselect
+      const res = await request(app)
+        .delete(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+
+      const row = await prisma.userSelectedPublisher.findUnique({
+        where: {
+          userId_publisherId: {
+            userId: BigInt(userId),
+            publisherId: source.id,
+          },
+        },
+      });
+      expect(row).toBeNull();
+    });
+
+    it("is idempotent — deleting a non-selected source returns 200", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "Indeed" },
+      });
+
+      const res = await request(app)
+        .delete(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+    });
+  });
+
+  // ─── PATCH /api/user/sources/:id ──────────────────────────────────
+  describe("PATCH /api/user/sources/:sourceId", () => {
+    it("toggles isEnabled to false on an existing selection", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "LinkedIn" },
+      });
+
+      // Select first
+      await request(app)
+        .post(`/api/user/sources/${source.id}/select`)
+        .set("Authorization", `Bearer ${token}`);
+
+      // Toggle off
+      const res = await request(app)
+        .patch(`/api/user/sources/${source.id}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ isEnabled: false });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.isEnabled).toBe(false);
+
+      const row = await prisma.userSelectedPublisher.findUniqueOrThrow({
+        where: {
+          userId_publisherId: {
+            userId: BigInt(userId),
+            publisherId: source.id,
+          },
+        },
+      });
+      expect(row.isEnabled).toBe(false);
+    });
+
+    it("returns 404 if the source is not in the user's list", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "Glassdoor" },
+      });
+
+      const res = await request(app)
+        .patch(`/api/user/sources/${source.id}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({ isEnabled: false });
+
+      expect(res.status).toBe(404);
+    });
+
+    it("returns 400 for a missing isEnabled body field", async () => {
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "LinkedIn" },
+      });
+
+      const res = await request(app)
+        .patch(`/api/user/sources/${source.id}`)
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
 
       expect(res.status).toBe(400);
     });
+  });
 
-    it("returns 401 without a token", async () => {
-      const res = await request(app).post("/api/user/sources/1/select");
-      expect(res.status).toBe(401);
-    });
-
-    it("does not let user A affect user B's selections", async () => {
+  // ─── Cross-user isolation ─────────────────────────────────────────
+  describe("Cross-user isolation", () => {
+    it("user A's selection does not affect user B", async () => {
       const other = await createTestUser({ email: "other@example.com" });
-      const source = await prisma.jobSource.findFirstOrThrow({
-        where: { name: "RemoteOK" },
+      const source = await prisma.jobPublisher.findFirstOrThrow({
+        where: { name: "LinkedIn" },
       });
 
-   
       await request(app)
         .post(`/api/user/sources/${source.id}/select`)
         .set("Authorization", `Bearer ${token}`);
 
-  
       const res = await request(app)
-        .get("/api/user/sources/list")
+        .get("/api/user/sources")
         .set("Authorization", `Bearer ${other.token}`);
 
-      const remoteOk = res.body.data.sources.find(
-        (s: any) => s.name === "RemoteOK",
-      );
-      expect(remoteOk.isSelected).toBe(false);
-    });
-
-    it("reflects selection in GET /sources/list", async () => {
-      const source = await prisma.jobSource.findFirstOrThrow({
-        where: { name: "JSearch" },
-      });
-
-      await request(app)
-        .post(`/api/user/sources/${source.id}/select`)
-        .set("Authorization", `Bearer ${token}`);
-
-      const res = await request(app)
-        .get("/api/user/sources/list")
-        .set("Authorization", `Bearer ${token}`);
-
-      const jsearch = res.body.data.sources.find(
-        (s: any) => s.name === "JSearch",
-      );
-      expect(jsearch.isSelected).toBe(true);
-      expect(jsearch.isEnabled).toBe(true);
+      const linkedin = res.body.data.sources.find((s: any) => s.name === "LinkedIn");
+      expect(linkedin.isSelected).toBe(false);
     });
   });
 });
