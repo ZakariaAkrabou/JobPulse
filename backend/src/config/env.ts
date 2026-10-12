@@ -27,6 +27,10 @@ const env = {
   RAPIDAPI_HOST: process.env.RAPIDAPI_HOST || "",
 
 
+  JSEARCH_KEY: process.env.JSEARCH_KEY || "",
+  JSEARCH_HOST: process.env.JSEARCH_HOST || "jsearch.p.rapidapi.com",
+
+
   COOKIE_DOMAIN: process.env.COOKIE_DOMAIN || "localhost",
 };
 

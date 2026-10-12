@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import preferencesRoutes from "./routes/preferences.routes.js";
 import sourceRoutes from "./routes/sources.routes.js";
+import jobsRoutes from "./routes/jobs.routes.js";
 
 const app = express();
 
@@ -24,14 +25,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/user", preferencesRoutes);
 app.use("/api/sources", sourceRoutes);
-app.use("/api/user/sources", sourceRoutes);
+app.use("/api/jobs", jobsRoutes);
 
 app.get("/", (req, res) => {
     res.json({
         success: true,
         message: "Server is running!",
     });
+
 });
+
+
 
 
 app.use(errorHandler);
