@@ -2,6 +2,7 @@ import { prisma } from "../../src/config/database.js";
 
 export async function resetDb() {
   await prisma.userSelectedPublisher.deleteMany();
+  await prisma.job.deleteMany();
   await prisma.user.deleteMany();
   await prisma.role.deleteMany();
   await prisma.jobPublisher.deleteMany();
@@ -14,6 +15,7 @@ export async function resetDb() {
   await prisma.$executeRawUnsafe(`ALTER TABLE job_apis AUTO_INCREMENT = 1`);
   await prisma.$executeRawUnsafe(`ALTER TABLE job_publishers AUTO_INCREMENT = 1`);
   await prisma.$executeRawUnsafe(`ALTER TABLE user_selected_publishers AUTO_INCREMENT = 1`);
+  await prisma.$executeRawUnsafe(`ALTER TABLE jobs AUTO_INCREMENT = 1`);
 }
 
 export async function seedRoles() {
