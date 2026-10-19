@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import preferencesRoutes from "./routes/preferences.routes.js";
 import sourceRoutes from "./routes/sources.routes.js";
 import jobsRoutes from "./routes/jobs.routes.js";
+import matchesRoutes from "./routes/matches.routes.js";
 
 const app = express();
 
@@ -23,9 +24,10 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-app.use("/api/user", preferencesRoutes);
+app.use("/api/user/preferences", preferencesRoutes);
 app.use("/api/sources", sourceRoutes);
 app.use("/api/jobs", jobsRoutes);
+app.use("/api/user/matches", matchesRoutes);
 
 app.get("/", (req, res) => {
     res.json({

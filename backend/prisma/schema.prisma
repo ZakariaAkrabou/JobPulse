@@ -71,6 +71,7 @@ model User {
   profile UserProfile?
   preferences UserJobPreferences?
   selectedPublishers UserSelectedPublisher[]
+  jobMatches UserJobMatch[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -131,12 +132,13 @@ model Job {
 
   jobType    String? @map("job_type") @db.VarChar(50)
   workMode   String? @map("work_mode") @db.VarChar(50)
-
+  skills Json?
   postedAt  DateTime? @map("posted_at")
   fetchedAt DateTime  @default(now()) @map("fetched_at")
 
   jobApi       JobApi        @relation(fields: [jobApiId], references: [id])
   jobPublisher JobPublisher? @relation(fields: [jobPublisherId], references: [id])
+  userMatches UserJobMatch[]
 
   @@unique([externalId, jobApiId])
   @@index([postedAt])
@@ -189,4 +191,26 @@ model UserSelectedPublisher {
 
   @@unique([userId, publisherId])
   @@map("user_selected_publishers")
+}
+
+
+model UserJobMatch {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  userId     BigInt   @map("user_id") @db.UnsignedBigInt
+  jobId      BigInt   @map("job_id") @db.UnsignedBigInt
+  matchScore Float    @map("match_score") @db.Float
+
+  isNotified  Boolean @default(false) @map("is_notified")
+  isSaved     Boolean @default(false) @map("is_saved")
+  isDismissed Boolean @default(false) @map("is_dismissed")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId, matchScore])
+  @@index([userId, isNotified])
+  @@map("user_job_matches")
 }

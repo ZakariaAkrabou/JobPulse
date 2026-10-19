@@ -4,7 +4,7 @@ import { runJSearchFetch } from "../services/fetch/jobs-fetcher.service.js";
 import type { FetchParams } from "../dto/JsearchDto.js"
 
 export async function manualFetch(req: Request, res: Response) {
-  
+
   const { userId } = getAuthUser(req);
 
 
@@ -37,9 +37,14 @@ export async function manualFetch(req: Request, res: Response) {
 
   return res.status(200).json({
     success: true,
-    message: `Fetched ${result.fetched}, inserted ${result.inserted}, skipped ${result.skipped}`,
+    message: `Fetched ${result.fetched}, inserted ${result.inserted}, created ${result.matchesCreated} matches`,
     data: {
-      ...result,
+      fetched: result.fetched,
+      inserted: result.inserted,
+      skipped: result.skipped,
+      newPublishers: result.newPublishers,
+      matchesCreated: result.matchesCreated,
+      usersEvaluated: result.usersEvaluated,
       requestedBy: userId,
       query,
       country: country ?? null,
