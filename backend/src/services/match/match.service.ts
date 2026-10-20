@@ -1,13 +1,14 @@
-import {prisma} from "../../config/database";
-import {computeMatchScore} from "./scoring";
-import type { MatchRunResult} from "../../dto/ScoreDto";
+import { prisma } from "../../config/database";
+import { computeMatchScore } from "./scoring";
+import type { MatchRunResult } from "../../dto/ScoreDto";
+import { extractSkills } from "./skill-extractor";
 
 
 
-const MIN_SCORE = 0.60;
+const MIN_SCORE = 0.50;
 
 
-export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunResult> {
+export async function runMatchingForJobs(jobIds: bigint[],): Promise<MatchRunResult> {
   if (jobIds.length === 0) {
     return { usersEvaluated: 0, matchesCreated: 0, matchesSkipped: 0 };
   }
@@ -16,7 +17,6 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
     where: { id: { in: jobIds } },
   });
 
- 
   const users = await prisma.user.findMany({
     where: {
       isVerified: true,
@@ -34,12 +34,22 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
   let matchesCreated = 0;
 
   for (const user of users) {
-    const userSkills = extractUserSkills(user.profile?.resumeParsedJson);
+   
+    const rawUserSkills = extractUserSkills(user.profile?.resumeParsedJson);
+
+   
+    const userSkills = extractSkills(rawUserSkills.join(" "));
+
+    // console.log(
+    //   `[match] user=${user.id} rawSkills=${rawUserSkills.length} normalizedSkills=${userSkills.length}`,
+    // );
+    // console.log(`[match] user=${user.id} normalized:`, userSkills);
+
+    
     const selectedPublisherIds = new Set(
       user.selectedPublishers.map((s) => s.publisherId.toString()),
     );
 
-  
     if (selectedPublisherIds.size === 0) continue;
 
     for (const job of jobs) {
@@ -52,6 +62,7 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
       }
 
       const jobSkills = (job.skills as string[] | null) ?? [];
+      
 
       const result = computeMatchScore({
         jobTitle: job.title,
@@ -66,8 +77,12 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
         userSkills,
       });
 
-      if (result.score < MIN_SCORE) continue;
+      if (result.score < MIN_SCORE) {
+       
+        continue;
+      }
 
+      
       await prisma.userJobMatch.upsert({
         where: { userId_jobId: { userId: user.id, jobId: job.id } },
         update: { matchScore: result.score },
@@ -77,6 +92,7 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
       matchesCreated++;
     }
   }
+  
 
   return {
     usersEvaluated: users.length,
@@ -84,6 +100,10 @@ export async function runMatchingForJobs( jobIds: bigint[], ): Promise<MatchRunR
     matchesSkipped: jobs.length * users.length - matchesCreated,
   };
 }
+
+
+
+
 function extractUserSkills(parsedJson: unknown): string[] {
   if (!parsedJson || typeof parsedJson !== "object") return [];
   const skills = (parsedJson as any).skills;

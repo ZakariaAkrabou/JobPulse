@@ -15,6 +15,7 @@ export interface ScoringResult {
   score: number;
   breakdown: {
     titleSimilarity: number;
+    skillOverlap: number;
     locationMatch: number;
     recency: number;
   };

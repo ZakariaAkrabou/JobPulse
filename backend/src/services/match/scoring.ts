@@ -1,4 +1,4 @@
-import type {ScoringInput , ScoringResult} from '../../dto/ScoreDto';
+import type { ScoringInput, ScoringResult } from '../../dto/ScoreDto';
 
 
 
@@ -35,10 +35,10 @@ function computeLocationMatch(
 
   if (userWorkMode === "remote" && jobWorkMode === "remote") return 1;
 
- 
+
   if (userWorkMode === "remote" && jobWorkMode !== "remote") return 0;
 
- 
+
   if (jobWorkMode === "remote") return 0.5;
 
 
@@ -52,7 +52,7 @@ function computeLocationMatch(
 }
 
 function computeRecency(postedAt: Date | null): number {
-  if (!postedAt) return 0.5;  
+  if (!postedAt) return 0.5;
   const ageMs = Date.now() - postedAt.getTime();
   const ageDays = ageMs / (1000 * 60 * 60 * 24);
 
@@ -67,26 +67,44 @@ function tokenize(text: string): string[] {
   return text
     .toLowerCase()
     .split(/[^a-z0-9]+/)
-    .filter((w) => w.length > 2);  
+    .filter((w) => w.length > 2);
 }
 
+function computeSkillOverlap(userSkills: string[], jobSkills: string[]): number {
+  if (jobSkills.length === 0) return 0;
+  if (userSkills.length === 0) return 0;
+
+  const userSet = new Set(userSkills.map((s) => s.toLowerCase().trim()));
+  let matches = 0;
+
+  for (const skill of jobSkills) {
+    if (userSet.has(skill.toLowerCase().trim())) {
+      matches++;
+    }
+  }
+
+  return matches / jobSkills.length;
+}
 
 export function computeMatchScore(input: ScoringInput): ScoringResult {
+  const skillOverlap = computeSkillOverlap(input.userSkills, input.jobSkills);
+  const titleSimilarity = computeTitleSimilarity(input.jobTitle, input.userCurrentTitle);
+  const locationMatch = computeLocationMatch(
+    input.jobLocation,
+    input.jobWorkMode,
+    input.userLocation,
+    input.userWorkMode,
+  );
+  const recency = computeRecency(input.jobPostedAt);
 
-    const  titleSimilarity = computeTitleSimilarity(input.jobTitle, input.userCurrentTitle);
+  const score =
+    0.50 * skillOverlap +
+    0.20 * titleSimilarity +
+    0.15 * locationMatch +
+    0.15 * recency;
 
-    const  locationMatch = computeLocationMatch(input.jobLocation, input.jobWorkMode, input.userLocation, input.userWorkMode);
-
-    const recency = computeRecency(input.jobPostedAt);
-
-    const score = 0.50 * titleSimilarity + 0.30 * locationMatch + 0.20 * recency;
-
-    return {
-        score: Math.min(1, Math.max(0, score)),
-        breakdown: {
-            titleSimilarity,
-            locationMatch,
-            recency
-        }
-    }
+  return {
+    score: Math.min(1, Math.max(0, score)),
+    breakdown: { skillOverlap, titleSimilarity, locationMatch, recency },
+  };
 }
