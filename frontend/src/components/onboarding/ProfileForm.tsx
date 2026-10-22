@@ -216,11 +216,10 @@ export default function ProfileForm() {
                   }}
                   placeholder="e.g. Senior Frontend Engineer"
                   disabled={isSubmitting || isSaved}
-                  className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] focus:bg-white transition-colors ${
-                    error.title
+                  className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] focus:bg-white transition-colors ${error.title
                       ? "border-[#D97575]"
                       : "border-[#E5E1D8] hover:border-[#D8D2C4]"
-                  }`}
+                    }`}
                 />
                 <FiBriefcase
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#949499] pointer-events-none"
@@ -251,11 +250,10 @@ export default function ProfileForm() {
                   }}
                   placeholder="e.g. Casablanca, Morocco or Remote"
                   disabled={isSubmitting || isSaved}
-                  className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] focus:bg-white transition-colors ${
-                    error.location
+                  className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] focus:bg-white transition-colors ${error.location
                       ? "border-[#D97575]"
                       : "border-[#E5E1D8] hover:border-[#D8D2C4]"
-                  }`}
+                    }`}
                 />
                 <FiMapPin
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#949499] pointer-events-none"
@@ -270,7 +268,7 @@ export default function ProfileForm() {
               {/* Quick suggestion chips */}
               <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
                 <span className="text-[11px] font-mono text-[#949499]">Suggestions:</span>
-                {["Remote", "Casablanca, Morocco", "Rabat, Morocco", "London, UK", "Paris, France"].map(
+                {["Casablanca, Morocco", "Rabat, Morocco", "London, UK", "Paris, France"].map(
                   (chip) => (
                     <button
                       key={chip}

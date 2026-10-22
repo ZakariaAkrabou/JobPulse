@@ -9,6 +9,7 @@ import { Button } from "@/src/components/ui/button";
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const isClient = pathname?.startsWith("/client");
   const isOnboarding = pathname?.startsWith("/onboarding");
   const stepNumber = pathname?.includes("/resume")
     ? 2
@@ -40,6 +41,41 @@ export default function Header() {
               Exit setup
             </Link>
           </div>
+        ) : isClient ? (
+          <nav className="flex items-center gap-4 sm:gap-6 text-sm font-medium">
+            <Link
+              href="/client/dashboard"
+              className={`transition-colors font-medium text-xs sm:text-sm ${
+                pathname === "/client/dashboard"
+                  ? "text-[#3F5D9E] font-semibold"
+                  : "text-[#6B6B72] hover:text-[#2A2B2F]"
+              }`}
+            >
+              Matches
+            </Link>
+            <Link
+              href="/onboarding/preferences"
+              className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors text-xs sm:text-sm"
+            >
+              Preferences
+            </Link>
+            <Link
+              href="/onboarding/profile"
+              className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors text-xs sm:text-sm"
+            >
+              Profile
+            </Link>
+            <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-mono bg-[#E6F2EC] text-[#4C9A78] border border-[#4C9A78]/25">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#4C9A78] animate-pulse-subtle" />
+              <span>Scanner active</span>
+            </div>
+            <Link
+              href="/login"
+              className="font-mono text-xs text-[#949499] hover:text-[#2A2B2F] transition-colors"
+            >
+              Sign out
+            </Link>
+          </nav>
         ) : (
           <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#2A2B2F]">
             <Link

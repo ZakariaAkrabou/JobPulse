@@ -255,10 +255,10 @@ export default function PreferencesForm() {
                 {formData.dateRange === "h24"
                   ? "Past 24h"
                   : formData.dateRange === "d7"
-                  ? "Past 7 days"
-                  : formData.dateRange === "d30"
-                  ? "Past 30 days"
-                  : "Any time"}
+                    ? "Past 7 days"
+                    : formData.dateRange === "d30"
+                      ? "Past 30 days"
+                      : "Any time"}
               </span>
             </div>
 
@@ -355,10 +355,9 @@ export default function PreferencesForm() {
                   </div>
                 </div>
 
-                {/* Quick location chips directly below */}
                 <div className="flex flex-wrap items-center gap-1.5 -mt-2">
                   <span className="text-[11px] font-mono text-[#949499]">Quick pick:</span>
-                  {["Morocco", "Casablanca", "Rabat", "Remote", "Worldwide"].map((chip) => (
+                  {["Morocco", "Casablanca", "Rabat", "Worldwide"].map((chip) => (
                     <button
                       key={chip}
                       type="button"
@@ -387,11 +386,10 @@ export default function PreferencesForm() {
                           onClick={() =>
                             setFormData((prev) => ({ ...prev, workMode: opt.id }))
                           }
-                          className={`h-9.5 rounded-lg text-xs font-mono font-medium border transition-all cursor-pointer ${
-                            formData.workMode === opt.id
+                          className={`h-9.5 rounded-lg text-xs font-mono font-medium border transition-all cursor-pointer ${formData.workMode === opt.id
                               ? "bg-[#3F5D9E] text-white border-[#3F5D9E] shadow-xs"
                               : "bg-[#FAF9F6] text-[#6B6B72] border-[#E5E1D8] hover:bg-[#F2EFE9] hover:text-[#2A2B2F]"
-                          }`}
+                            }`}
                         >
                           {opt.label}
                         </button>
@@ -412,11 +410,10 @@ export default function PreferencesForm() {
                           onClick={() =>
                             setFormData((prev) => ({ ...prev, jobType: opt.id }))
                           }
-                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium border transition-all cursor-pointer ${
-                            formData.jobType === opt.id
+                          className={`px-3 py-1.5 rounded-lg text-xs font-mono font-medium border transition-all cursor-pointer ${formData.jobType === opt.id
                               ? "bg-[#3F5D9E] text-white border-[#3F5D9E] shadow-xs"
                               : "bg-[#FAF9F6] text-[#6B6B72] border-[#E5E1D8] hover:bg-[#F2EFE9] hover:text-[#2A2B2F]"
-                          }`}
+                            }`}
                         >
                           {opt.label}
                         </button>
@@ -445,11 +442,10 @@ export default function PreferencesForm() {
                             onClick={() =>
                               setFormData((prev) => ({ ...prev, currency: c }))
                             }
-                            className={`px-2.5 py-0.5 text-xs font-mono font-medium rounded-md transition-all cursor-pointer ${
-                              formData.currency === c
+                            className={`px-2.5 py-0.5 text-xs font-mono font-medium rounded-md transition-all cursor-pointer ${formData.currency === c
                                 ? "bg-[#3F5D9E] text-white shadow-xs"
                                 : "text-[#6B6B72] hover:text-[#2A2B2F]"
-                            }`}
+                              }`}
                           >
                             {c}
                           </button>
@@ -494,11 +490,10 @@ export default function PreferencesForm() {
                           onClick={() =>
                             setFormData((prev) => ({ ...prev, salaryMin: val }))
                           }
-                          className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-all cursor-pointer ${
-                            formData.salaryMin === val
+                          className={`px-2 py-0.5 rounded text-[11px] font-mono border transition-all cursor-pointer ${formData.salaryMin === val
                               ? "bg-[#E7ECF7] border-[#3F5D9E] text-[#3F5D9E] font-medium"
                               : "border-[#E5E1D8] bg-[#FAF9F6] text-[#6B6B72] hover:bg-[#F2EFE9] hover:text-[#2A2B2F]"
-                          }`}
+                            }`}
                         >
                           {val.toLocaleString()} {formData.currency}
                         </button>
@@ -520,11 +515,10 @@ export default function PreferencesForm() {
                           onClick={() =>
                             setFormData((prev) => ({ ...prev, dateRange: opt.id }))
                           }
-                          className={`h-9 px-2 rounded-lg text-xs font-mono font-medium transition-all text-center flex items-center justify-center cursor-pointer ${
-                            formData.dateRange === opt.id
+                          className={`h-9 px-2 rounded-lg text-xs font-mono font-medium transition-all text-center flex items-center justify-center cursor-pointer ${formData.dateRange === opt.id
                               ? "bg-[#FFFFFF] text-[#2A2B2F] border border-[#E5E1D8] shadow-xs font-semibold"
                               : "text-[#6B6B72] hover:text-[#2A2B2F]"
-                          }`}
+                            }`}
                         >
                           {opt.label}
                         </button>

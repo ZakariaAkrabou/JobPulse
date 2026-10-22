@@ -15,7 +15,7 @@ import {
 import { Button } from "@/src/components/ui/button";
 import ProgressBar from "./ProgressBar";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx"];
 const ALLOWED_MIME_TYPES = [
   "application/pdf",
@@ -35,7 +35,7 @@ export default function ResumeUpload() {
   const [existingResumeUrl, setExistingResumeUrl] = useState<string | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
-  // Check if user already has a resume on file
+
   useEffect(() => {
     let isMounted = true;
 
@@ -79,13 +79,13 @@ export default function ResumeUpload() {
   const validateFile = (selectedFile: File): boolean => {
     setError(null);
 
-    // Validate size
+ 
     if (selectedFile.size > MAX_FILE_SIZE) {
       setError("File size exceeds 5MB limit. Please upload a smaller file.");
       return false;
     }
 
-    // Validate extension / MIME
+
     const extension = `.${selectedFile.name.split(".").pop()?.toLowerCase()}`;
     const isValidExtension = ALLOWED_EXTENSIONS.includes(extension);
     const isValidMime = ALLOWED_MIME_TYPES.includes(selectedFile.type);
@@ -145,7 +145,7 @@ export default function ResumeUpload() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // If already has resume and hasn't chosen a new file, simply advance
+   
     if (!file && existingResumeUrl) {
       router.push("/onboarding/preferences");
       return;
@@ -206,10 +206,10 @@ export default function ResumeUpload() {
       transition={{ duration: 0.35, ease: "easeOut" }}
       className="w-full max-w-115 mx-auto"
     >
-      {/* 3-segment progress indicator line */}
+     
       <ProgressBar currentStep={2} totalSteps={3} />
 
-      {/* Heading section */}
+     
       <div className="text-center mb-8">
         <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
           Upload your resume.
