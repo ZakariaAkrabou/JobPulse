@@ -60,8 +60,12 @@ export default function Header() {
               Preferences
             </Link>
             <Link
-              href="/onboarding/profile"
-              className="text-[#6B6B72] hover:text-[#2A2B2F] transition-colors text-xs sm:text-sm"
+              href="/client/profile"
+              className={`transition-colors font-medium text-xs sm:text-sm ${
+                pathname === "/client/profile"
+                  ? "text-[#3F5D9E] font-semibold"
+                  : "text-[#6B6B72] hover:text-[#2A2B2F]"
+              }`}
             >
               Profile
             </Link>
