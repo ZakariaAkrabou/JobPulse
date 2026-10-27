@@ -1,10 +1,9 @@
 "use client";
-
 import React from "react";
 import { cn } from "@/src/lib/utils";
 
 export interface ProgressBarProps {
-  currentStep: number; // 1, 2, or 3
+  currentStep: number;
   totalSteps?: number;
   className?: string;
 }
@@ -17,12 +16,10 @@ const STEPS = [
 
 export default function ProgressBar({
   currentStep = 1,
-  totalSteps = 3,
   className,
 }: ProgressBarProps) {
   return (
     <div className={cn("w-full select-none mb-8", className)}>
-      {/* 3-segment progress indicator line */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {STEPS.map((s) => {
           const isComplete = s.step < currentStep;
