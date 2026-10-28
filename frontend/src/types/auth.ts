@@ -14,3 +14,16 @@ export type RegisterResponse = {
   message?: string;
   errors?: RegisterFieldError[];
 };
+export type LoginInput = {
+  email: string;
+  password: string;
+};
+
+export type LoginResponse = {
+  success: boolean;
+  message?: string;
+  errors?: {
+    field: string;
+    message: string;
+  }[];
+};

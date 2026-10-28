@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { loginUser } from "@/src/services/auth.service";
+
 import { motion } from "framer-motion";
 import { FiEye, FiEyeOff, FiArrowRight, FiMail, FiCheck } from "react-icons/fi";
 
@@ -20,8 +22,9 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
@@ -47,17 +50,31 @@ export default function LoginPage() {
 
     setError("");
     setIsLoading(true);
+    setSuccess(false);
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const result = await loginUser({
+        email: trimmedEmail,
+        password,
+      });
+
+      if (!result.success) {
+        setError(result.message || "Invalid email or password.");
+        return;
+      }
+
       setSuccess(true);
+
       setTimeout(() => {
-        router.push("/");
+        router.replace("/client/dashboard");
+        router.refresh();
       }, 900);
-    }, 800);
+    } catch {
+      setError("Unable to sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAF9F6] text-[#2A2B2F]">
@@ -70,22 +87,20 @@ export default function LoginPage() {
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="w-full max-w-110"
         >
-          
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Welcome back to Job<span className="italic text-[#3F5D9E]">pulse</span>.
+              Welcome back to Job
+              <span className="italic text-[#3F5D9E]">pulse</span>.
             </h1>
 
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[38ch] mx-auto">
-              Sign in to monitor your matching roles, adjust notification thresholds, and update your resume.
+              Sign in to monitor your matching roles, adjust notification
+              thresholds, and update your resume.
             </p>
           </div>
 
-          
           <div className="rounded-[14px] border border-[#E5E1D8] bg-[#FFFFFF] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-colors hover:border-[#D8D2C4]">
-           
             <form onSubmit={handleSubmit} className="space-y-4">
-          
               <div>
                 <label
                   htmlFor="login-email"
@@ -107,7 +122,9 @@ export default function LoginPage() {
                     aria-describedby={error ? "login-error" : undefined}
                     aria-invalid={Boolean(error)}
                     className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] transition-colors ${
-                      error && !email ? "border-[#D97575]" : "border-[#E5E1D8] hover:border-[#D8D2C4]"
+                      error && !email
+                        ? "border-[#D97575]"
+                        : "border-[#E5E1D8] hover:border-[#D8D2C4]"
                     }`}
                   />
                   <FiMail
@@ -117,7 +134,6 @@ export default function LoginPage() {
                 </div>
               </div>
 
-            
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label
@@ -148,21 +164,28 @@ export default function LoginPage() {
                     aria-describedby={error ? "login-error" : undefined}
                     aria-invalid={Boolean(error)}
                     className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] transition-colors ${
-                      error && !password ? "border-[#D97575]" : "border-[#E5E1D8] hover:border-[#D8D2C4]"
+                      error && !password
+                        ? "border-[#D97575]"
+                        : "border-[#E5E1D8] hover:border-[#D8D2C4]"
                     }`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#949499] hover:text-[#2A2B2F] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] rounded-xs"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
 
-            
               <div className="flex items-center justify-between pt-1">
                 <label className="flex items-center gap-2 cursor-pointer select-none">
                   <input
@@ -177,7 +200,6 @@ export default function LoginPage() {
                 </label>
               </div>
 
-            
               {error && (
                 <div
                   id="login-error"
@@ -216,9 +238,6 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-
-            
-        
           </div>
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6B6B72]">
@@ -231,8 +250,6 @@ export default function LoginPage() {
               </Link>
             </p>
           </div>
-
-
         </motion.div>
       </main>
 
