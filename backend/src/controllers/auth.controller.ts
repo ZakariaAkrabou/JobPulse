@@ -1,11 +1,13 @@
 import type { Request, Response } from "express";
 import {registerSchema,loginSchema,verifyEmailSchema,} from "../validators/auth.validator.js";
 import { createClientUser,findUserByEmail,findUserByVerificationToken,markUserVerified,setRefreshToken,getRoleNameById,
-         setResetPasswordToken, findUserByResetToken, updateUserPassword,} from "../services/auth.service.js";
-import { sendResetPasswordMail, sendVerificationMail } from "../services/mail.service.js";
+         setResetPasswordToken, findUserByResetToken, updateUserPassword,findUserById} from "../services/auth.service.js";
+         
+import { sendResetPasswordMail, sendVerificationMail, } from "../services/mail.service.js";
 import { hashPassword, verifyPassword } from "../utils/hash.js";
 import { generateVerificationToken,verificationTokenExpiry,signAccessToken, generateRefreshToken, refreshTokenExpiry,generateResetToken,resetTokenExpiry,} from "../utils/token";
 import env from "../config/env.js";
+import type { AuthUser } from "../types/auth.js";
 import { forgotPasswordSchema, resetPasswordSchema } from "../validators/auth.validator.js";
 
 
@@ -264,5 +266,45 @@ export async function resetPassword(req: Request, res: Response) {
   return res.status(200).json({
     success: true,
     message: "Password reset successfully. Please log in with your new password.",
+  });
+}
+
+export async function getMe(req: Request, res: Response) {
+  const authUser = (req as Request & { user?: AuthUser }).user;
+
+  if (!authUser) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication required",
+    });
+  }
+
+  const user = await findUserById(BigInt(authUser.userId));
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "User account no longer exists",
+    });
+  }
+
+  const role = await getRoleNameById(user.roleId);
+
+  if (!role) {
+    return res.status(401).json({
+      success: false,
+      message: "User role not found",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: user.id.toString(),
+      email: user.email,
+      fullName: user.fullName,
+      role,
+      isVerified: user.isVerified,
+    },
   });
 }
