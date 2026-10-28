@@ -36,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="en" data-scroll-behavior="smooth"
       className={`${inter.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#FAF9F6] text-[#2A2B2F] font-sans antialiased selection:bg-[#FBEEE2] selection:text-[#3F5D9E]">
