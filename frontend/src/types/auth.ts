@@ -27,3 +27,17 @@ export type LoginResponse = {
     message: string;
   }[];
 };
+
+export interface ForgotPasswordPayload {
+  email: string;
+}
+
+export interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+}

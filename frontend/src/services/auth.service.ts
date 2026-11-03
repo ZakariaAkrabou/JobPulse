@@ -1,4 +1,4 @@
-import type { RegisterInput, RegisterResponse,  LoginInput, LoginResponse} from "@/src/types/auth";
+import type { RegisterInput, RegisterResponse, LoginInput, LoginResponse, ForgotPasswordPayload, ResetPasswordPayload, AuthResponse } from "@/src/types/auth";
 
 
 
@@ -73,4 +73,41 @@ export async function loginUser(input: LoginInput,): Promise<LoginResponse> {
   }
 
   return result;
+}
+
+export async function forgotPassword( payload: ForgotPasswordPayload): Promise<AuthResponse> {
+  const response = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data: AuthResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to request password reset.");
+  }
+
+  return data;
+}
+
+export async function resetPassword(payload: ResetPasswordPayload ): Promise<AuthResponse> {
+
+  const response = await fetch("/api/auth/reset-password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const data: AuthResponse = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Unable to reset password.");
+  }
+
+  return data;
 }

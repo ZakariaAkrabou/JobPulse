@@ -3,7 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FiMail, FiArrowRight, FiArrowLeft, FiCheck, FiRefreshCw } from "react-icons/fi";
+import {
+  FiMail,
+  FiArrowRight,
+  FiArrowLeft,
+  FiCheck,
+  FiRefreshCw,
+} from "react-icons/fi";
+
+import { forgotPassword } from "@/src/services/auth.service";
 
 import Header from "@/src/components/layout/header";
 import Footer from "@/src/components/layout/footer";
@@ -15,9 +23,11 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [resending, setResending] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
@@ -26,6 +36,7 @@ export default function ForgotPassword() {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(trimmedEmail)) {
       setError("Please enter a valid email format.");
       return;
@@ -34,17 +45,44 @@ export default function ForgotPassword() {
     setError("");
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await forgotPassword({
+        email: trimmedEmail,
+      });
+
+      setSuccessMessage(response.message);
+      setEmail(trimmedEmail);
       setIsSubmitted(true);
-    }, 850);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
+    setError("");
     setResending(true);
-    setTimeout(() => {
+
+    try {
+      const response = await forgotPassword({
+        email: email.trim(),
+      });
+
+      setSuccessMessage(response.message);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to resend the reset email.",
+      );
+    } finally {
       setResending(false);
-    }, 800);
+    }
   };
 
   return (
@@ -61,7 +99,8 @@ export default function ForgotPassword() {
           {/* Headline */}
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Reset your Job<span className="italic text-[#3F5D9E]">pulse</span> password.
+              Reset your Job<span className="italic text-[#3F5D9E]">pulse</span>{" "}
+              password.
             </h1>
 
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[38ch] mx-auto">
@@ -95,7 +134,9 @@ export default function ForgotPassword() {
                       aria-describedby={error ? "forgot-error" : undefined}
                       aria-invalid={Boolean(error)}
                       className={`w-full h-11 pl-3.5 pr-10 rounded-lg bg-[#FAF9F6] border text-sm text-[#2A2B2F] placeholder:text-[#949499] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3F5D9E] transition-colors ${
-                        error ? "border-[#D97575]" : "border-[#E5E1D8] hover:border-[#D8D2C4]"
+                        error
+                          ? "border-[#D97575]"
+                          : "border-[#E5E1D8] hover:border-[#D8D2C4]"
                       }`}
                     />
                     <FiMail
@@ -105,7 +146,6 @@ export default function ForgotPassword() {
                   </div>
                 </div>
 
-             
                 {error && (
                   <div
                     id="forgot-error"
@@ -140,9 +180,11 @@ export default function ForgotPassword() {
                 >
                   <FiCheck className="h-4 w-4 mt-0.5 shrink-0" />
                   <div className="space-y-1">
-                    <p className="font-semibold text-[#2A2B2F]">Reset email sent</p>
+                    <p className="font-semibold text-[#2A2B2F]">
+                      Reset email sent
+                    </p>
                     <p className="text-[#6B6B72] leading-relaxed">
-                      We sent a password reset link to <span className="text-[#2A2B2F] font-medium">{email}</span>. Please check your inbox and spam folder.
+                      {successMessage}
                     </p>
                   </div>
                 </div>
@@ -155,7 +197,9 @@ export default function ForgotPassword() {
                     disabled={resending}
                     className="w-full sm:flex-1 h-10 gap-2 text-xs font-mono"
                   >
-                    <FiRefreshCw className={`h-3.5 w-3.5 ${resending ? "animate-spin text-[#3F5D9E]" : ""}`} />
+                    <FiRefreshCw
+                      className={`h-3.5 w-3.5 ${resending ? "animate-spin text-[#3F5D9E]" : ""}`}
+                    />
                     <span>{resending ? "Resending..." : "Resend email"}</span>
                   </Button>
 
