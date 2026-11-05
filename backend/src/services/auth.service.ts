@@ -1,19 +1,19 @@
-import {prisma} from '../config/database';
-import type {RoleName} from '../generated/prisma/enums';
-import type {UserModel} from '../generated/prisma/models/User';
-import type {CreateUserInput} from '../dto/RegisterDto';
+import { prisma } from '../config/database';
+import type { RoleName } from '../generated/prisma/enums';
+import type { UserModel } from '../generated/prisma/models/User';
+import type { CreateUserInput } from '../dto/RegisterDto';
 
 
 export async function getRoleIdByName(name: RoleName): Promise<bigint> {
-    const role = await prisma.role.findUnique({
-        where: { name },
-    });
+  const role = await prisma.role.findUnique({
+    where: { name },
+  });
 
-    if(!role) {
-        throw new Error(`Role with name ${name} not found`);
-    }
+  if (!role) {
+    throw new Error(`Role with name ${name} not found`);
+  }
 
-    return role.id;
+  return role.id;
 }
 
 export async function getRoleNameById(id: bigint): Promise<RoleName | null> {
@@ -27,9 +27,9 @@ export async function getRoleNameById(id: bigint): Promise<RoleName | null> {
 
 export async function findUserByEmail(email: string): Promise<UserModel | null> {
 
-    return prisma.user.findUnique({
-        where: { email },
-    });
+  return prisma.user.findUnique({
+    where: { email },
+  });
 }
 
 export async function findUserById(id: bigint): Promise<UserModel | null> {
@@ -38,9 +38,9 @@ export async function findUserById(id: bigint): Promise<UserModel | null> {
 }
 
 export async function findUserByVerificationToken(token: string): Promise<UserModel | null> {
-    return prisma.user.findFirst({
-        where: {verificationToken: token},
-    });
+  return prisma.user.findFirst({
+    where: { verificationToken: token },
+  });
 }
 
 
@@ -62,45 +62,41 @@ export async function createClientUser(input: CreateUserInput): Promise<UserMode
 }
 
 export async function markUserVerified(userId: bigint): Promise<UserModel> {
-    return prisma.user.update({
-        where: { id: userId },
-        data: { 
-            isVerified: true,
-            verificationToken: null,
-            verificationTokenExpiresAt: null,               
-         },
-    });
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      isVerified: true,
+      verificationToken: null,
+      verificationTokenExpiresAt: null,
+    },
+  });
 }
 
 
 export async function setRefreshToken(userId: bigint, token: string, expiresAt: Date): Promise<UserModel> {
 
-    return prisma.user.update({
-        where:{id:userId},
-        data:{
-            refreshToken: token,
-            refreshTokenExpiresAt: expiresAt,
-        },
-    });
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      refreshToken: token,
+      refreshTokenExpiresAt: expiresAt,
+    },
+  });
 }
 
 
 export async function clearRefreshToken(userId: bigint): Promise<void> {
-    await prisma.user.update({
-        where: { id: userId },
-        data:{
-            refreshToken: null,
-            refreshTokenExpiresAt: null,
-        }
-    })
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      refreshToken: null,
+      refreshTokenExpiresAt: null,
+    }
+  })
 }
 
 
-export async function setResetPasswordToken(
-  userId: bigint,
-  token: string,
-  expiresAt: Date,
-): Promise<UserModel> {
+export async function setResetPasswordToken(userId: bigint, token: string, expiresAt: Date,): Promise<UserModel> {
   return prisma.user.update({
     where: { id: userId },
     data: {
@@ -116,10 +112,7 @@ export async function findUserByResetToken(token: string): Promise<UserModel | n
   });
 }
 
-export async function updateUserPassword(
-  userId: bigint,
-  passwordHash: string,
-): Promise<UserModel> {
+export async function updateUserPassword(userId: bigint, passwordHash: string,): Promise<UserModel> {
   return prisma.user.update({
     where: { id: userId },
     data: {
