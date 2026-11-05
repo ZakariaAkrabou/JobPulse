@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { FiEye, FiEyeOff, FiArrowRight, FiCheck } from "react-icons/fi";
 
@@ -10,7 +8,15 @@ import Header from "@/src/components/layout/header";
 import Footer from "@/src/components/layout/footer";
 import { Button } from "@/src/components/ui/button";
 
-function getPasswordStrength(pw: string): { score: number; label: string; color: string } {
+import { useRouter, useSearchParams } from "next/navigation";
+import { resetPassword } from "@/src/services/auth.service";
+import Link from "next/link";
+
+function getPasswordStrength(pw: string): {
+  score: number;
+  label: string;
+  color: string;
+} {
   if (!pw) return { score: 0, label: "", color: "" };
   let score = 0;
   if (pw.length >= 8) score++;
@@ -35,18 +41,20 @@ export default function ResetPassword() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token") ?? null;
 
   const strength = getPasswordStrength(password);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!password) {
-      setError("Please enter a new password.");
+    if (!token) {
+      setError("Invalid or missing password reset token.");
       return;
     }
 
-    if (password.length < 8) {
+    if (!password || password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
     }
@@ -64,22 +72,32 @@ export default function ResetPassword() {
     setError("");
     setIsLoading(true);
 
+    try {
+      await resetPassword({
+        token,
+        newPassword: password,
+      });
 
-    setTimeout(() => {
-      setIsLoading(false);
       setSuccess(true);
+
       setTimeout(() => {
         router.push("/login");
-      }, 1000);
-    }, 850);
+      }, 1500);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Unable to reset your password.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const confirmBorder =
     confirmPassword && confirmPassword !== password
       ? "border-[#D97575]"
       : confirmPassword && confirmPassword === password
-      ? "border-[#4C9A78]"
-      : "border-[#E5E1D8] hover:border-[#D8D2C4]";
+        ? "border-[#4C9A78]"
+        : "border-[#E5E1D8] hover:border-[#D8D2C4]";
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAF9F6] text-[#2A2B2F]">
@@ -95,11 +113,13 @@ export default function ResetPassword() {
           {/* Headline */}
           <div className="text-center mb-8">
             <h1 className="font-serif text-3xl sm:text-4xl text-[#2A2B2F] tracking-tight">
-              Create new <span className="italic text-[#3F5D9E]">password</span>.
+              Create new <span className="italic text-[#3F5D9E]">password</span>
+              .
             </h1>
 
             <p className="mt-2.5 text-sm text-[#6B6B72] leading-relaxed max-w-[38ch] mx-auto">
-              Your new password must be at least 8 characters and different from previously used passwords.
+              Your new password must be at least 8 characters and different from
+              previously used passwords.
             </p>
           </div>
 
@@ -130,13 +150,18 @@ export default function ResetPassword() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#949499] hover:text-[#2A2B2F] transition-colors cursor-pointer focus-visible:outline-none"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
 
-             
                 {password && (
                   <div className="mt-2">
                     <div className="flex gap-1 mb-1">
@@ -145,19 +170,22 @@ export default function ResetPassword() {
                           key={i}
                           className="h-1 flex-1 rounded-full transition-all duration-300"
                           style={{
-                            backgroundColor: i <= strength.score ? strength.color : "#E5E1D8",
+                            backgroundColor:
+                              i <= strength.score ? strength.color : "#E5E1D8",
                           }}
                         />
                       ))}
                     </div>
-                    <span className="font-mono text-[11px]" style={{ color: strength.color }}>
+                    <span
+                      className="font-mono text-[11px]"
+                      style={{ color: strength.color }}
+                    >
                       {strength.label}
                     </span>
                   </div>
                 )}
               </div>
 
-           
               <div>
                 <label
                   htmlFor="reset-confirm"
@@ -182,13 +210,18 @@ export default function ResetPassword() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#949499] hover:text-[#2A2B2F] transition-colors cursor-pointer focus-visible:outline-none"
-                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showConfirmPassword ? "Hide password" : "Show password"
+                    }
                   >
-                    {showConfirmPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                    {showConfirmPassword ? (
+                      <FiEyeOff className="h-4 w-4" />
+                    ) : (
+                      <FiEye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
 
-                
                 {confirmPassword && (
                   <motion.p
                     key={confirmPassword !== password ? "no-match" : "match"}
@@ -196,7 +229,10 @@ export default function ResetPassword() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.18 }}
                     className="mt-1.5 font-mono text-[11px] flex items-center gap-1"
-                    style={{ color: confirmPassword !== password ? "#D97575" : "#4C9A78" }}
+                    style={{
+                      color:
+                        confirmPassword !== password ? "#D97575" : "#4C9A78",
+                    }}
                     aria-live="polite"
                   >
                     {confirmPassword !== password ? (
@@ -214,7 +250,6 @@ export default function ResetPassword() {
                 )}
               </div>
 
-            
               {error && (
                 <div
                   id="reset-error"
@@ -225,14 +260,15 @@ export default function ResetPassword() {
                 </div>
               )}
 
-             
               {success && (
                 <div
                   role="status"
                   className="rounded-lg bg-[#E6F2EC] border border-[#4C9A78]/30 p-2.5 font-mono text-xs text-[#4C9A78] flex items-center gap-2"
                 >
                   <FiCheck className="h-4 w-4" />
-                  <span>Password updated successfully. Redirecting to login…</span>
+                  <span>
+                    Password updated successfully. Redirecting to login…
+                  </span>
                 </div>
               )}
 
@@ -257,7 +293,10 @@ export default function ResetPassword() {
 
             <div className="mt-5 pt-4 border-t border-[#E5E1D8] text-center font-mono text-[11px] text-[#6B6B72]">
               {"Remember your password? "}
-              <Link href="/login" className="text-[#3F5D9E] hover:underline cursor-pointer font-medium">
+              <Link
+                href="/login"
+                className="text-[#3F5D9E] hover:underline cursor-pointer font-medium"
+              >
                 Sign in here
               </Link>
             </div>
@@ -266,7 +305,10 @@ export default function ResetPassword() {
           <div className="mt-6 text-center">
             <p className="text-sm text-[#6B6B72]">
               {"Need assistance? "}
-              <Link href="#" className="text-[#3F5D9E] font-medium hover:underline cursor-pointer">
+              <Link
+                href="#"
+                className="text-[#3F5D9E] font-medium hover:underline cursor-pointer"
+              >
                 Contact candidate support
               </Link>
             </p>
